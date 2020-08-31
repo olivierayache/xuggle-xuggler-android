@@ -6,7 +6,7 @@ name: Android Deploy AAR CI
 # events but only for the master branch
 on:
   push:
-    branches: [ master ]
+    branches: [ olivierayache-test-cd-ci ]
   pull_request:
     branches: [ master ]
 

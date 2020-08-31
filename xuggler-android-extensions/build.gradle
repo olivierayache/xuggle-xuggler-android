@@ -1,0 +1,102 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'maven-publish'
+
+version '1.0.0-SNAPSHOT'
+
+android {
+    compileSdkVersion 29
+
+    defaultConfig {
+        minSdkVersion 21
+        targetSdkVersion 29
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    compileOnly 'xuggle:xuggle-xuggler:5.7.0-SNAPSHOT'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+
+}
+
+task generateSourcesJar(type: Jar) {
+    archiveClassifier = 'sources'
+    from android.sourceSets.main.java.srcDirs
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            debug(MavenPublication) {
+                artifact generateSourcesJar
+                artifact bundleDebugAar {classifier 'debug'}
+                pom {
+                    groupId = 'xuggle'
+                    packaging = 'aar'
+                    description = 'Xuggler library extensions for Android'
+                    url = 'https://github.com/olivierayache/xuggler-android-extensions'
+                    licenses {
+                        license {
+                            name = 'The Apache License, Version 2.0'
+                            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        }
+                    }
+                    developers {
+                        developer {
+                            name = 'Olivier Ayache'
+                        }
+                    }
+                    scm {
+                        connection = 'scm:git:git://github.com/olivierayache/xuggler-android-extensions'
+                        developerConnection = 'scm:git:ssh://github.com/olivierayache/xuggler-android-extensions'
+                        url = 'https://github.com/olivierayache/xuggler-android-extensions'
+                    }
+                }
+
+                def dep = configurations.implementation.dependencies
+                pom.withXml {
+                    def dependenciesNode = asNode().appendNode('dependencies')
+                    // Iterate over the api dependencies (we don't want the test ones), adding a <dependency> node for each
+                    dep.each {
+                        def dependencyNode = dependenciesNode.appendNode('dependency')
+                        dependencyNode.appendNode('groupId', it.group)
+                        dependencyNode.appendNode('artifactId', it.name)
+                        dependencyNode.appendNode('version', it.version)
+                    }
+                }
+            }
+        }
+        repositories {
+            maven {
+                // change URLs to point to your repos, e.g. http://my.org/repo
+                def releasesRepoUrl = "$buildDir/repos/releases"
+                def snapshotsRepoUrl = "$buildDir/repos/snapshots"
+                url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+            }
+//            maven {
+//                def releasesRepoUrl = "https://nexus.dev.keakr.com/repository/maven-releases/"
+//                def snapshotsRepoUrl = "https://nexus.dev.keakr.com/repository/maven-snapshots/"
+//                url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+//                credentials {
+//                    username "$nexusUser"
+//                    password "$nexusPassword"
+//                }
+//            }
+        }
+    }
+
+}

@@ -1,0 +1,2 @@
+include ':xuggler-android-extensions'
+rootProject.name = "Xuggler Android"

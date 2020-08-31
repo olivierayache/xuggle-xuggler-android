@@ -92,7 +92,7 @@ afterEvaluate {
             name = "GitHubPackages"
             url = "https://maven.pkg.github.com/olivierayache/xuggle-xuggler-android"
             credentials {
-                username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
+                username = project.findProperty("gpr.user") ?: System.getenv("GITHUB_ACTOR")
                 password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
             }
         }

@@ -27,6 +27,15 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
+      - name: Cache gradle
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
       # Runs a single command using the runners shell
       - name: Build android aar
         run: gradle wrapper && ./gradlew build

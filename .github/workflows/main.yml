@@ -28,6 +28,7 @@ jobs:
         with:
           java-version: 1.8
       - name: Cache gradle
+        id: cache-gradle
         uses: actions/cache@v2
         with:
           path: |
@@ -37,6 +38,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
       # Runs a single command using the runners shell
+      - name: Generate Gradle Wrapper
+        if: steps.cache-gradle.outputs.cache-hit != 'true'
+        run: gradle wrapper
       - name: Build android aar
-        run: gradle wrapper && ./gradlew build
+        run:  ./gradlew build
 

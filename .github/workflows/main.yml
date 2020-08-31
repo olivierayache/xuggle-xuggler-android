@@ -44,6 +44,6 @@ jobs:
         run: gradle wrapper
       - name: Build android aar
         env:
-          TOKEN: ${{secrets.GITHUB_DEPLOY_TOKEN }}
+          TOKEN: ${{ secrets.GITHUB_DEPLOY_TOKEN }}
         run:  ./gradlew publish
 

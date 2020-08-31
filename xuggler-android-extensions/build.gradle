@@ -87,15 +87,15 @@ afterEvaluate {
                 def snapshotsRepoUrl = "$buildDir/repos/snapshots"
                 url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
             }
-//            maven {
-//                def releasesRepoUrl = "https://nexus.dev.keakr.com/repository/maven-releases/"
-//                def snapshotsRepoUrl = "https://nexus.dev.keakr.com/repository/maven-snapshots/"
-//                url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
-//                credentials {
-//                    username "$nexusUser"
-//                    password "$nexusPassword"
-//                }
-//            }
+            
+            maven {
+            name = "GitHubPackages"
+            url = "https://maven.pkg.github.com/olivierayache/xuggle-xuggler-android"
+            credentials {
+                username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
+                password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
+            }
+        }
         }
     }
 

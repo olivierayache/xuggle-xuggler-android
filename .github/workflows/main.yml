@@ -32,6 +32,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
+            gradle/wrapper
             ~/.gradle/caches
             ~/.gradle/wrapper
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}

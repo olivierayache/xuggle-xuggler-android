@@ -25,5 +25,5 @@ jobs:
 
       # Runs a single command using the runners shell
       - name: Build android aar
-        run: ./gradlew build
+        run: echo "coucou"
 

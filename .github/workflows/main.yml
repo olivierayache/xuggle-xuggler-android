@@ -43,5 +43,7 @@ jobs:
         if: steps.cache-gradle.outputs.cache-hit != 'true'
         run: gradle wrapper
       - name: Build android aar
-        run:  ./gradlew build
+        env:
+          TOKEN: ${{secrets.GITHUB_DEPLOY_TOKEN }}
+        run:  ./gradlew publish
 

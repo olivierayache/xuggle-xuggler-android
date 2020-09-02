@@ -45,7 +45,7 @@ jobs:
       - name: Build android aar
         env:
           TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CLOUDSMITH_USER: ${{ secrets.CLOUDSMITH_DEPLOY_USERNAME }}
-          CLOUDSMITH_TOKEN: ${{ secrets.CLOUDSMITH_DEPLOY_TOKEN }}
+          CLOUDSMITH_DEPLOY_USERNAME: ${{ secrets.CLOUDSMITH_DEPLOY_USERNAME }}
+          CLOUDSMITH_DEPLOY_TOKEN: ${{ secrets.CLOUDSMITH_DEPLOY_TOKEN }}
         run:  ./gradlew publish
 

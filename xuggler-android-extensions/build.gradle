@@ -95,6 +95,18 @@ afterEvaluate {
                 username = project.findProperty("gpr.user") ?: System.getenv("GITHUB_ACTOR")
                 password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
             }
+            
+            maven {
+                name = "cloudsmith"
+                url = "https://maven.cloudsmith.io/olivier-ayache/xuggler-extensions/"
+                def releasesRepoUrl = "https://maven.cloudsmith.io/olivier-ayache/xuggler-extensions/"
+                def snapshotsRepoUrl = "https://maven.cloudsmith.io/olivier-ayache/xuggler-extensions/"
+                url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+                credentials {
+                username = project.findProperty("gpr.user") ?: System.getenv("CLOUDSMITH_DEPLOY_USERNAME")
+                password = project.findProperty("gpr.key") ?: System.getenv("CLOUDSMITH_DEPLOY_TOKEN")
+            }
+    }
         }
         }
     }

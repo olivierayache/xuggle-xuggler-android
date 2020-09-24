@@ -46,7 +46,7 @@ class ParcelFileDescriptorProtocolHandler(private val context: Context) : IURLPr
     }
 
     override fun isStreamed(url: String, flags: Int): Boolean {
-        return true
+        return false
     }
 
     override fun seek(offset: Long, whence: Int): Long {

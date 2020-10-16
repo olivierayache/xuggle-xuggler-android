@@ -5,15 +5,21 @@ import android.content.ContentResolver
 import android.content.ContentValues
 import android.database.Cursor
 import android.net.Uri
+import android.os.Build
 import androidx.core.content.ContentProviderCompat
+import com.xuggle.ferry.ITempFileCreator
 import com.xuggle.xuggler.io.URLProtocolManager
 import com.xuggle.xuggler.io.android.ParcelFileDescriptorProtocolHandler
+import java.io.File
 import java.lang.Exception
 
 class XugglerProvider: ContentProvider() {
 
     override fun onCreate(): Boolean {
         return try {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                ITempFileCreator.Builder.setDefault { s, s2, file -> File(context?.filesDir, s).apply { deleteOnExit() } }
+            }
             URLProtocolManager.getManager().registerFactory(
                 ContentResolver.SCHEME_CONTENT
             ) { _: String, _: String, _: Int ->

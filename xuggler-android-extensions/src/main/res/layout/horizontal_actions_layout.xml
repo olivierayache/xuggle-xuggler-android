@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                                     android:layout_width="match_parent"
+                                                     android:layout_height="match_parent"
+                                                     android:orientation="horizontal">
+
+    <FrameLayout
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_gravity="end|center_vertical"
+            android:layout_margin="28dp">
+
+        <com.xuggle.xuggler.record.SwitchImageButton
+                android:id="@+id/flash"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/flash_button"
+                android:backgroundTint="#FFFFFF"
+                android:visibility="gone"/>
+    </FrameLayout>
+
+    <com.xuggle.xuggler.record.SwitchImageButton
+            android:id="@+id/record"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_gravity="center|center_vertical"
+            android:layout_margin="16dp"
+            android:background="@drawable/ic_record"
+            android:stateListAnimator="@xml/animate_record_button"
+            android:visibility="gone"/>
+
+    <FrameLayout
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_gravity="start|center_vertical"
+            android:layout_margin="28dp">
+
+        <com.xuggle.xuggler.record.SwitchImageButton
+                android:id="@+id/flip"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/baseline_flip_camera_android"
+                android:backgroundTint="#FFFFFF"
+                android:stateListAnimator="@xml/animate_flip_camera"
+                android:visibility="gone"/>
+    </FrameLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

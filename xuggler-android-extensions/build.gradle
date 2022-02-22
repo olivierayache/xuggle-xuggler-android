@@ -6,11 +6,11 @@ apply plugin: 'maven-publish'
 version '1.0.0-SNAPSHOT'
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 31
 
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 29
+        targetSdkVersion 31
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -25,11 +25,13 @@ android {
 }
 
 dependencies {
-    implementation 'androidx.appcompat:appcompat:1.2.0'
-    compileOnly 'xuggle:xuggle-xuggler:5.7.0-SNAPSHOT'
+    implementation 'androidx.appcompat:appcompat:1.4.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    compileOnly 'xuggle:xuggle-xuggler-android-all:5.7.0-SNAPSHOT'
     testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 
 }
 
@@ -43,7 +45,7 @@ afterEvaluate {
         publications {
             debug(MavenPublication) {
                 artifact generateSourcesJar
-                artifact bundleDebugAar {classifier 'debug'}
+                artifact bundleDebugAar { classifier 'debug' }
                 pom {
                     groupId = 'xuggle'
                     packaging = 'aar'
@@ -87,27 +89,27 @@ afterEvaluate {
                 def snapshotsRepoUrl = "$buildDir/repos/snapshots"
                 url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
             }
-            
+
             maven {
-            name = "GitHubPackages"
-            url = "https://maven.pkg.github.com/olivierayache/xuggle-xuggler-android"
-            credentials {
-                username = project.findProperty("gpr.user") ?: System.getenv("GITHUB_ACTOR")
-                password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
-            }
-            
-            maven {
-                name = "cloudsmith"
-                url = "https://maven.cloudsmith.io/olivier-ayache/xuggler-extensions/"
-                def releasesRepoUrl = "https://maven.cloudsmith.io/olivier-ayache/xuggler-extensions/"
-                def snapshotsRepoUrl = "https://maven.cloudsmith.io/olivier-ayache/xuggler-extensions/"
-                url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+                name = "GitHubPackages"
+                url = "https://maven.pkg.github.com/olivierayache/xuggle-xuggler-android"
                 credentials {
-                username = project.findProperty("gpr.user") ?: System.getenv("CLOUDSMITH_DEPLOY_USERNAME")
-                password = project.findProperty("gpr.key") ?: System.getenv("CLOUDSMITH_DEPLOY_TOKEN")
+                    username = project.findProperty("gpr.user") ?: System.getenv("GITHUB_ACTOR")
+                    password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
+                }
+
+                maven {
+                    name = "cloudsmith"
+                    url = "https://maven.cloudsmith.io/olivier-ayache/xuggler-extensions/"
+                    def releasesRepoUrl = "https://maven.cloudsmith.io/olivier-ayache/xuggler-extensions/"
+                    def snapshotsRepoUrl = "https://maven.cloudsmith.io/olivier-ayache/xuggler-extensions/"
+                    url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+                    credentials {
+                        username = project.findProperty("gpr.user") ?: System.getenv("CLOUDSMITH_DEPLOY_USERNAME")
+                        password = project.findProperty("gpr.key") ?: System.getenv("CLOUDSMITH_DEPLOY_TOKEN")
+                    }
+                }
             }
-    }
-        }
         }
     }
 

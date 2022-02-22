@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_checked="true">
+        <set>
+            <objectAnimator
+                android:duration="600"
+                android:propertyName="rotation"
+                android:valueFrom="0"
+                android:valueTo="180"/>
+        </set>
+    </item>
+    <item android:state_checked="false">
+        <set>
+            <objectAnimator
+                android:duration="600"
+                android:propertyName="rotation"
+                android:valueFrom="180"
+                android:valueTo="0"/>
+        </set>
+    </item>
+</selector>

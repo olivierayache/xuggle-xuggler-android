@@ -1,10 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.xuggle">
+          package="com.xuggle">
+
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
     <application>
+        <activity
+                android:name=".xuggler.record.FullscreenActivity"
+                android:configChanges="orientation|keyboardHidden|screenSize"
+                android:theme="@style/FullscreenTheme">
+        </activity>
+
         <provider
-            android:authorities="${applicationId}."
-            android:name=".XugglerProvider"
-            android:exported="false"/>
+                android:name=".XugglerProvider"
+                android:authorities="${applicationId}."
+                android:exported="false"/>
     </application>
 
 </manifest>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="fill"
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_marginTop="96dp"
+        android:layout_gravity="center_horizontal">
+
+        <com.xuggle.xuggler.record.SwitchImageButton
+            android:id="@+id/flash"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/flash_button"
+            android:backgroundTint="#FFFFFF"
+            android:visibility="gone" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="164dp"
+        android:layout_gravity="center_horizontal">
+
+        <com.xuggle.xuggler.record.SwitchImageButton
+            android:id="@+id/flip"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/baseline_flip_camera_android"
+            android:backgroundTint="#FFFFFF"
+            android:stateListAnimator="@xml/animate_flip_camera"
+            android:visibility="gone" />
+    </FrameLayout>
+
+    <com.xuggle.xuggler.record.SwitchImageButton
+        android:id="@+id/record"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_gravity="bottom|center_horizontal"
+        android:stateListAnimator="@xml/animate_record_button"
+        android:background="@drawable/ic_record"
+        android:layout_margin="16dp"
+        android:visibility="gone"/>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

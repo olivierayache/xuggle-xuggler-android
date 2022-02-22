@@ -41,7 +41,7 @@ jobs:
       # Runs a single command using the runners shell
       - name: Generate Gradle Wrapper
         if: steps.cache-gradle.outputs.cache-hit != 'true'
-        run: gradle wrapper
+        run: gradle wrapper --gradle-version 6.8
       - name: Build android aar
         env:
           TOKEN: ${{ secrets.GITHUB_TOKEN }}

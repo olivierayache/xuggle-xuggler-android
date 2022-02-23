@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.SurfaceHolder
 import android.view.View
 import android.view.WindowManager
-import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.xuggle.R
@@ -126,11 +125,15 @@ open class FullscreenActivity : AppCompatActivity(), SurfaceHolder.Callback {
     open fun createMediaRecorder(): MediaRecorder = MediaRecorder()
 
     override fun surfaceCreated(holder: SurfaceHolder) {
+        holder.setFixedSize(1280, 720)
         recordingSessionManager.openCamera {
-            enablePreview(holder)
+            enablePreview(holder.surface)
             recordButton.visibility = View.VISIBLE
             switch.visibility = View.VISIBLE
             flash.visibility = View.VISIBLE
+            recordButton.isClickable = true
+            switch.isClickable = true
+            flash.isClickable = true
             recordButton.setOnCheckedChangeListener { _, _ -> record() }
             switch.setOnCheckedChangeListener { _, _ -> switchCamera() }
             flash.setOnCheckedChangeListener { _, isChecked -> switchFlash(isChecked) }

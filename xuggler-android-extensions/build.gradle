@@ -1,7 +1,9 @@
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
-apply plugin: 'maven-publish'
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+    id 'kotlin-android-extensions'
+    id 'maven-publish'
+}
 
 version '1.0.0-SNAPSHOT'
 
@@ -22,13 +24,25 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
 }
 
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.4.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
+    implementation 'androidx.coordinatorlayout:coordinatorlayout:1.2.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    compileOnly 'xuggle:xuggle-xuggler-android-all:5.7.0-SNAPSHOT'
+    implementation 'androidx.core:core-ktx:1.7.0'
+    implementation 'xuggle:xuggle-xuggler-android-all:5.7.0-SNAPSHOT'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
@@ -46,6 +60,7 @@ afterEvaluate {
             debug(MavenPublication) {
                 artifact generateSourcesJar
                 artifact bundleDebugAar { classifier 'debug' }
+                artifact bundleReleaseAar
                 pom {
                     groupId = 'xuggle'
                     packaging = 'aar'
@@ -100,9 +115,9 @@ afterEvaluate {
 
                 maven {
                     name = "cloudsmith"
-                    url = "https://maven.cloudsmith.io/olivier-ayache/xuggler-extensions/"
-                    def releasesRepoUrl = "https://maven.cloudsmith.io/olivier-ayache/xuggler-extensions/"
-                    def snapshotsRepoUrl = "https://maven.cloudsmith.io/olivier-ayache/xuggler-extensions/"
+                    url = "https://api-g.cloudsmith.io/maven/olivier-ayache/xuggler-extensions/"
+                    def releasesRepoUrl = "https://api-g.cloudsmith.io/maven/olivier-ayache/xuggler-extensions/"
+                    def snapshotsRepoUrl = "https://api-g.cloudsmith.io/maven/olivier-ayache/xuggler-extensions/"
                     url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
                     credentials {
                         username = project.findProperty("gpr.user") ?: System.getenv("CLOUDSMITH_DEPLOY_USERNAME")

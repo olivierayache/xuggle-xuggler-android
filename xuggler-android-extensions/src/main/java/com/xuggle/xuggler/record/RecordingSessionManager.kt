@@ -1,14 +1,15 @@
 package com.xuggle.xuggler.record
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
 import android.graphics.ImageFormat
 import android.hardware.camera2.*
+import android.os.Looper
 import android.renderscript.*
 import android.util.Log
 import android.view.Surface
-import android.view.SurfaceHolder
-import inc.ayache.simplemixrecorder.ScriptC_rotate
+import com.xuggle.ScriptC_rotate
 
 open class RecordingSessionManager(
     private val context: Context,
@@ -65,19 +66,21 @@ open class RecordingSessionManager(
      * A preview should start when the camera is opened (on [CameraDevice.StateCallback.onOpened] callback called)
      */
     @SuppressLint("MissingPermission")
-    fun openCamera(onOpened: Controller.() -> Unit) {
+    fun openCamera(onOpened: Controller.() -> Unit = {}) {
         val cameraId = cm.cameraIdList.find {
             cm.getCameraCharacteristics(it).get(CameraCharacteristics.LENS_FACING) == cameraDirection
         }
         if (cameraId != null) {
             cm.openCamera(cameraId, object : CameraDevice.StateCallback() {
                 override fun onOpened(camera: CameraDevice) {
+                    this@RecordingSessionManager.camera = camera
                     onOpened(controller)
                     if (state == State.SWITCH_RECORDING) {
                         startRecordSession(
                             onStopRecording = {
                                 mr.stop()
                                 state = State.IDLE
+                                previewSurface?.let(this@RecordingSessionManager::preparePreview)
                             }
                         )
                     } else {
@@ -94,12 +97,11 @@ open class RecordingSessionManager(
                 }
 
                 override fun onClosed(camera: CameraDevice) {
-                    onClosed(camera)
                     when (state) {
-                        State.SWITCH_RECORDING,
+                        State.SWITCH_RECORDING -> openCamera()
                         State.SWITCH -> {
                             state = State.IDLE
-                            openCamera(onOpened)
+                            openCamera()
                         }
                         State.RECORDING -> state = State.IDLE
                     }
@@ -150,13 +152,13 @@ open class RecordingSessionManager(
                                 frameNumber: Long
                             ) {
                                 if (state == State.SWITCH) {
-                                    session.close()
+                                    session.device.close()
                                 }
                             }
 
                             override fun onCaptureSequenceAborted(session: CameraCaptureSession, sequenceId: Int) {
                                 if (state == State.SWITCH) {
-                                    session.close()
+                                    session.device.close()
                                 }
                             }
                         },
@@ -284,18 +286,18 @@ open class RecordingSessionManager(
 
     inner class Controller {
 
-        fun enablePreview(surfaceHolder: SurfaceHolder){
-            val width = mr.videoConfig.width
-            val height = mr.videoConfig.height
-            surfaceHolder.setFixedSize(width, height)
-            previewSurface = surfaceHolder.surface
+        fun enablePreview(surface: Surface) {
+            val height = mr.videoConfig.width
+            val width = mr.videoConfig.height
+            previewSurface = surface
 
             //TODO: move this code
             val create = RenderScript.create(context)
 
             inputAllocation = Allocation.createTyped(
                 create,
-                Type.Builder(create, Element.U8_4(create)).setX(width).setY(height).setYuvFormat(ImageFormat.YUV_420_888).create(),
+                Type.Builder(create, Element.U8_4(create)).setX(width).setY(height)
+                    .setYuvFormat(ImageFormat.YUV_420_888).create(),
                 Allocation.USAGE_SCRIPT or Allocation.USAGE_IO_INPUT
             )
 
@@ -334,7 +336,7 @@ open class RecordingSessionManager(
          */
         fun switchCamera() {
             when (state) {
-                State.PREPARED,
+                State.IDLE,
                 State.RECORDING -> {
                     cameraDirection = when (cameraDirection) {
                         CameraCharacteristics.LENS_FACING_FRONT -> CameraCharacteristics.LENS_FACING_BACK
@@ -371,19 +373,22 @@ open class RecordingSessionManager(
                     state = State.PREPARING
                     mr.openOutput(context) { success ->
                         if (success) {
-                            outputAllocation.surface = mr.getInputSurface()
-                            state = State.PREPARED
-                            startRecordSession(
-                                onStartRecording = {
-                                    mr.startAudioRecording()
-                                    mr.start()
-                                    state = State.RECORDING
-                                },
-                                onStopRecording = {
-                                    mr.stop()
-                                    state = State.IDLE
-                                }
-                            )
+                            (context as Activity).runOnUiThread {
+                                outputAllocation.surface = mr.getInputSurface()
+                                state = State.PREPARED
+                                startRecordSession(
+                                    onStartRecording = {
+                                        mr.startAudioRecording()
+                                        mr.start()
+                                        state = State.RECORDING
+                                    },
+                                    onStopRecording = {
+                                        mr.stop()
+                                        state = State.IDLE
+                                        previewSurface?.let(this@RecordingSessionManager::preparePreview)
+                                    }
+                                )
+                            }
                         }
                     }
                 }

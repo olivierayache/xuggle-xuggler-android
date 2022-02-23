@@ -41,8 +41,7 @@
         android:layout_width="64dp"
         android:layout_height="64dp"
         android:layout_gravity="bottom|center_horizontal"
-        android:stateListAnimator="@xml/animate_record_button"
-        android:background="@drawable/ic_record"
+        android:background="@xml/animate_record_button"
         android:layout_margin="16dp"
         android:visibility="gone"/>
 

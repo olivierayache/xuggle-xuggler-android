@@ -1,5 +1,6 @@
 package com.xuggle.xuggler.record
 
+import android.annotation.SuppressLint
 import android.content.ContentResolver
 import android.content.ContentValues
 import android.content.Context
@@ -27,7 +28,8 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 
 data class AudioConfig(
-    internal var audioCodec: ICodec.ID = ICodec.ID.AV_CODEC_ID_FLAC,
+    internal var audioCodec: ICodec.ID = ICodec.ID.AV_CODEC_ID_AAC,
+    internal val audioFormat: IAudioSamples.Format = IAudioSamples.Format.FMT_FLTP,
     internal val sampleRate: Int = 44100,
     internal val bitRate: Int = 192000
 )
@@ -48,6 +50,7 @@ data class VideoConfig(
  * @author Olivier Ayache
  *
  */
+@SuppressLint("MissingPermission")
 class MediaRecorder(
     val audioConfig: AudioConfig = AudioConfig(),
     val videoConfig: VideoConfig = VideoConfig()
@@ -75,7 +78,6 @@ class MediaRecorder(
     private var aGlobalPts = -1L
     private var aGlobalDts = -1L
     private var startUTCPts = 0L
-    private var startUTCPtsOffset = 0L
     private val readyToWritePacketQueue = ConcurrentLinkedQueue<IPacket>()
 
     private lateinit var surface: Surface
@@ -84,26 +86,26 @@ class MediaRecorder(
     companion object {
         private const val TAG = "MediaRecorder"
         private val EXECUTOR: CompletionService<Void> =
-            ExecutorCompletionService(Executors.newSingleThreadExecutor(ThreadFactory { r ->
+            ExecutorCompletionService(Executors.newSingleThreadExecutor { r ->
                 Thread(r).apply {
                     name = "recorder-thread"
                     Process.setThreadPriority(Process.THREAD_PRIORITY_AUDIO)
                 }
-            }))
+            })
 
         private lateinit var CONTAINER_THREAD: Thread
 
 
         private val CEXECUTOR: CompletionService<Void> =
-            ExecutorCompletionService(Executors.newSingleThreadExecutor(ThreadFactory { r ->
+            ExecutorCompletionService(Executors.newSingleThreadExecutor { r ->
                 CONTAINER_THREAD = Thread(r).apply {
                     name = "container-thread"
                     Process.setThreadPriority(Process.THREAD_PRIORITY_MORE_FAVORABLE)
                 }
                 CONTAINER_THREAD
-            }))
+            })
 
-        private val PACKET_QUEUE = ConcurrentLinkedQueue<IPacket>(List<IPacket>(2000) { IPacket.make() })
+        private val PACKET_QUEUE = ConcurrentLinkedQueue(List<IPacket>(2000) { IPacket.make() })
     }
 
     init {
@@ -142,10 +144,10 @@ class MediaRecorder(
         onContainerOpened: ((success: Boolean) -> Unit) = {}
     ): Uri {
 
-        var sampleFormat = IAudioSamples.Format.FMT_S16
+        var sampleFormat = audioConfig.audioFormat
         var groupOfPictures = 60
 
-        val absolutePath = outputUrl ?: getOutputMediaFile(context)
+        outputUrl = outputUrl ?: getOutputMediaFile(context)
 
         outputUrl?.let {
             if (ContentResolver.SCHEME_CONTENT != it.scheme &&
@@ -251,7 +253,7 @@ class MediaRecorder(
 
         }, null)
 
-        return absolutePath
+        return outputUrl!!
     }
 
     /**
@@ -353,10 +355,8 @@ class MediaRecorder(
      */
     private fun processAudio(): Int {
 
-        var read = -1
-
         finputBuffer.rewind()
-        read = audioRecord.read(finputBuffer, 2048)
+        val read = audioRecord.read(finputBuffer, 2048)
 
         if (read > 0) {
             samples.setComplete(
@@ -478,7 +478,6 @@ class MediaRecorder(
 
     /** Create a File for saving an image or video */
     private fun getOutputMediaFile(context: Context): Uri {
-
         val uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI
         // Create a media file name
         val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())

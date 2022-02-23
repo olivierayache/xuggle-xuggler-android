@@ -18,7 +18,7 @@ class XugglerProvider: ContentProvider() {
     override fun onCreate(): Boolean {
         return try {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-                ITempFileCreator.Builder.setDefault { s, s2, file -> File(context?.filesDir, s).apply { deleteOnExit() } }
+                ITempFileCreator.Builder.setDefault { s, _, _ -> File(context?.filesDir, s).apply { deleteOnExit() } }
             }
             URLProtocolManager.getManager().registerFactory(
                 ContentResolver.SCHEME_CONTENT

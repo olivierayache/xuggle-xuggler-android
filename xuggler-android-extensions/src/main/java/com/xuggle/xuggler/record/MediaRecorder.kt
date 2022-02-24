@@ -193,7 +193,7 @@ class MediaRecorder(
             container.standardsCompliance = IStreamCoder.CodecStandardsCompliance.COMPLIANCE_EXPERIMENTAL
             container.setProperty("mpegts_copyts", true)
             //container.setProperty("frag_size", 500);
-            //container.setProperty("movflags", "frag_keyframe+delay_moov")
+            container.setProperty("movflags", "frag_keyframe+delay_moov")
             //stream.metaData = IMetaData.make().apply {
             //setValue("rotate", value.toString())
             //}
